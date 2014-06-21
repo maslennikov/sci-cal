@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>JsCalc</title>
+    <meta key="author" value="Mike Bremford" />
+    <meta key="author" value="Alexey Maslennikov" />
+    <meta key="version" value="1.4" />
+
+    <link rel="stylesheet" type="text/css" href="lemonade.css">
+    <link rel="stylesheet" type="text/css" href="style.css" />
+
+    <script type='text/javascript' src='/System/Library/WidgetResources/AppleClasses/AppleSlider.js' charset='utf-8'></script>
+  </head>
+
+  <body oncut="eventCut(event)" oncopy="eventCopy(event)" onpaste="eventPaste(event)">
+    <div id="calculator">
+      <div id="front">
+        <div id="display">
+          <div id="display-content"></div>
+          <div id="display-error"></div>
+          <div id="display-mode"></div>
+        </div>
+        <div id="buttons">
+          <div class="row">
+            <div class="col-2 buttons-fun">
+              <div class="row">
+                <div class="col-5 keyslot" data-id="deg"> </div>
+                <div class="col-5 keyslot" data-id="hex"> </div>
+                <div class="col-5 keyslot" data-id="sin"> </div>
+                <div class="col-5 keyslot" data-id="cos"> </div>
+                <div class="col-5 keyslot" data-id="tan"> </div>
+              </div>
+              <div class="row">
+                <div class="col-5 keyslot" data-id="rad"> </div>
+                <div class="col-5 keyslot" data-id="oct"> </div>
+                <div class="col-5 keyslot" data-id="asin"> </div>
+                <div class="col-5 keyslot" data-id="acos"> </div>
+                <div class="col-5 keyslot" data-id="atan"> </div>
+              </div>
+              <div class="row">
+                <div class="col-5 keyslot" data-id="grad"> </div>
+                <div class="col-5 keyslot" data-id="bin"> </div>
+                <div class="col-5 keyslot" data-id="sqrt"> </div>
+                <div class="col-5 keyslot" data-id="cbrt"> </div>
+                <div class="col-5 keyslot" data-id="pi"> </div>
+              </div>
+              <div class="row">
+                <div class="col-5 keyslot" data-id="info"> </div>
+                <div class="col-5 keyslot" data-id="utf8"> </div>
+                <div class="col-5 keyslot" data-id="abs"> </div>
+                <div class="col-5 keyslot" data-id="pow"> </div>
+                <div class="col-5 keyslot" data-id="magice"> </div>
+              </div>
+            </div>
+
+            <div class="col-2 buttons-main">
+              <div class="row">
+                <div class="col-5 keyslot" data-id="7"> </div>
+                <div class="col-5 keyslot" data-id="8"> </div>
+                <div class="col-5 keyslot" data-id="9"> </div>
+                <div class="col-5 keyslot" data-id="div"> </div>
+                <div class="col-5 keyslot" data-id="clear"> </div>
+              </div>
+              <div class="row">
+                  <div class="col-5 keyslot" data-id="4"> </div>
+                  <div class="col-5 keyslot" data-id="5"> </div>
+                  <div class="col-5 keyslot" data-id="6"> </div>
+                  <div class="col-5 keyslot" data-id="mul"> </div>
+                  <div class="col-5 keyslot" data-id="bs"> </div>
+              </div>
+              <div class="row">
+                  <div class="col-5 keyslot" data-id="1"> </div>
+                  <div class="col-5 keyslot" data-id="2"> </div>
+                  <div class="col-5 keyslot" data-id="3"> </div>
+                  <div class="col-5 keyslot" data-id="sub"> </div>
+                  <div class="col-5 keyslot" data-id="eq"> </div>
+              </div>
+              <div class="row">
+                  <div class="col-5 keyslot" data-id="0"> </div>
+                  <div class="col-5 keyslot" data-id="plusminus"> </div>
+                  <div class="col-5 keyslot" data-id="decimal"> </div>
+                  <div class="col-5 keyslot" data-id="add"> </div>
+                  <div class="col-5 keyslot" data-id=""> </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="back">
+        <div id="backcontent">
+          <h3>SciCal</h3>
+          <p>
+            A calculator which allows evaluation of JavaScript expressions as
+            well as the usual.  You can use the keys or type directly into the
+            calculator. The left and right arrow keys can be used to move the
+            cursor when editing the expression.
+          </p><p>
+            <i>Because it can run any JavaScript it's probably not safe to run
+            on a website</i>.  Running from the Dashboard is fine however.
+          </p><p>
+            User-agent: <i id="x"></i>
+          </p>
+          <div class="row">
+              <div class="col-2" style="padding-right: 1em">
+                  <a class="key" href="javascript:swapPanel('back','front')">Done</a>
+              </div>
+              <div class="col-2" style="padding-left: 1em">
+                  <a class="key" href="mailto:alexey@maslennikov.me">Feedback</a>
+              </div>
+          </div>
+          <div id="colorSlider"></div>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript" src="app.js"></script>
+    <script type="text/javascript" src="ui.js"></script>
+  </body>
