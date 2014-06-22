@@ -50,7 +50,7 @@ body {
 #display {
     position: relative;
     height: 40px;
-    margin: 7px;
+    margin: 8px;
     border: 1px solid black;
     border-radius: 7px;
     background-color: #ececcb;
@@ -68,7 +68,7 @@ body {
     bottom: 0;
     text-align: right;
     white-space: pre;
-    font-size: 18pt;
+    font-size: 17pt;
     font-family: Courier New, monospace;
     line-height: 40px;
     text-align: right;
@@ -108,22 +108,43 @@ sup, sub {
 }
 
 sup {
-    top:-.6ex;
+    top:-.5ex;
 }
 
 sub {
-    top: .6ex;
+    top: .5ex;
 }
 
 .btn-wrapper {
     position: relative;
-    margin: 3px;
+    width: 100%;
+}
+
+.btn-wrapper:before {
+    content: "";
+    display: block;
+    padding-top: 100%; /* always keeping button ratio 1:1 */
+}
+
+.btn-text-wrapper {
+    display: table;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.btn-text {
+    display: table-cell;
+    vertical-align: middle;
 }
 
 .btn {
-    /* width: 35px; */
-    height: 35px;
-    line-height: 35px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
     font-size: 9pt;
     font-weight: 100;
     text-align: center;
@@ -169,10 +190,11 @@ sub {
 .btn#btn-eq {
     position: absolute;
     top: 0;
-    height: 76px; /*2x button + wrapper padding*/
+    width: -webkit-calc(200% + 6px);
+    width:    -moz-calc(200% + 6px);
+    width:         calc(200% + 6px);   /*6px for cell-spacing*/
     left: 0;
     right: 0;
-    line-height: 76px;
 }
 
 .btn.info {
@@ -200,3 +222,15 @@ sub {
     background: -ms-linear-gradient(left,  #f2b36f 0%,#f2b36f 10%,#f2e7da 50%,#f2b36f 90%,#f2b36f 100%); /* IE10+ */
     background: linear-gradient(to right,  #f2b36f 0%,#f2b36f 10%,#f2e7da 50%,#f2b36f 90%,#f2b36f 100%); /* W3C */
 }
+
+    .func-buttons .btn-wrapper:before {
+        content: "";
+        display: block;
+        padding-top: 58.5%; /* keeping button ratio 60% */
+    }
+
+/* @media (min-width: 250px) and (max-width: 400px) { */
+    .func-buttons .btn {
+        font-size: .55em;
+    }
+/* } */

@@ -4,13 +4,15 @@
 window.JsCalc = {
     panelvalue: '',             // Value displayed in the panel
     errorvalue: '',             // Value displayed in the error panel
-    paneloffset: 0              // How far in from the right we've cursored in
+    paneloffset: 0,             // How far in from the right we've cursored in
+    drg: 0                      // 0 - degrees, 1 - radians, 2 - gradians
 };
 
 JsCalc.buttons = {
-    deg: {style: 'drg btn--grey', help: 'Set trignometric mode to degrees'},
-    rad: {style: 'drg btn--grey', help: 'Set trignometric mode to radians'},
-    grad: {style: 'drg btn--grey', help: 'Set trignometric mode to gradients'},
+    // deg: {style: 'drg btn--grey', help: 'Set trignometric mode to degrees'},
+    // rad: {style: 'drg btn--grey', help: 'Set trignometric mode to radians'},
+    // grad: {style: 'drg btn--grey', help: 'Set trignometric mode to gradians'},
+    drg: {style: 'drg btn--grey', help: 'Trignometric mode: degrees/radians/gradians'},
     info: {style: 'info', sym: 'i', help: 'Show the info panel'},
     hex: {style: 'base btn--grey', help: 'Convert expression to base 16'},
     oct: {style: 'base btn--grey', help: 'Convert expression to base 8'},
@@ -63,7 +65,8 @@ function onLoad() {
 
 function draw() {
     createButtons();
-    document.getElementById("display-mode").innerHTML="degrees";
+    document.getElementById("display-mode").innerHTML =
+        (['deg', 'rad', 'grad'])[JsCalc.drg];
     doButton("clear");
 }
 
@@ -83,11 +86,18 @@ function createButtons() {
 function createButton(props) {
     var button = document.createElement('div');
     button.className = 'btn ' + (props.style || '');
-    button.innerHTML = props.sym || props.id;
     button.id = 'btn-' + props.id;
     if (props.help) {
         button.title = props.help;
     }
+
+    var textWrapper = document.createElement('div');
+    textWrapper.className = 'btn-text-wrapper';
+    var text = document.createElement('div');
+    text.className = 'btn-text';
+    text.innerHTML = props.sym || props.id;
+    textWrapper.appendChild(text);
+    button.appendChild(textWrapper);
 
     button.addEventListener('click', function (e) {
         doButton(props.id);
@@ -269,13 +279,17 @@ function doButton(btn) {
           case "utf8":
             JsCalc.panelvalue = "utf8("+zero(JsCalc.panelvalue)+")";
             break;
-          case "rad":
-          case "deg":
-          case "grad":
-            btn = btn=="rad" ? "radians" : btn=="grad" ? "gradients" : "degrees";
-            if (JsCalc.panelvalue!="") JsCalc.panelvalue = trig(myeval(JsCalc.panelvalue));
-            document.getElementById("display-mode").innerHTML = btn;
-            if (JsCalc.panelvalue!="") JsCalc.panelvalue = atrig(JsCalc.panelvalue).toString();
+          case 'drg':
+            var old = JsCalc.drg;
+            JsCalc.drg = (old + 1) % 3;
+            document.getElementById("display-mode").innerHTML =
+                (['deg', 'rad', 'grad'])[JsCalc.drg];
+
+            if (JsCalc.panelvalue) {
+                var val = myeval(JsCalc.panelvalue);
+                val = atrig(trig(val, old), JsCalc.drg);
+                JsCalc.panelvalue = fix(val).toString();
+            }
             break;
           case "eq":
             var out = JsCalc.panelvalue=="" ? "" : myeval(JsCalc.panelvalue);

@@ -28,29 +28,48 @@ function base(val,base) {
 /**
  * Convert value from current mode to radians
  */
-function trig(val) {
-    var mode = document.getElementById("display-mode").innerHTML;
-    if (mode=="degrees")        val = (val%360)/180*Math.PI;
-    else if (mode=="gradients") val = (val%400)/200*Math.PI;
-    else if (mode=="radians")   val = (val%(Math.PI*2));
-    else throw "Unknown base \""+mode+"\"";
-    return val;
+function trig(val, fromDrg) {
+    if (fromDrg == undefined) {
+        fromDrg = JsCalc.drg;
+    }
+
+    switch (fromDrg) {
+    case 0:
+        return (val % 360) * Math.PI / 180;
+    case 1:
+        return val % (Math.PI * 2);
+    case 2:
+        return (val % 400) / 200 * Math.PI;
+    default:
+        throw "Unknown base \"" + fromDrg + "\"";
+    }
 }
 
 /**
  * Convert value from radians to current mode
  */
-function atrig(val) {
-    var mode = document.getElementById("display-mode").innerHTML;
-    if (mode=="degrees")        val = val*180/Math.PI;
-    else if (mode=="gradients") val = val*200/Math.PI;
-    else if (mode=="radians") val = val;
-    else throw "Unknown base \""+mode+"\"";
-    return fix(val);
+function atrig(val, toDrg) {
+    if (toDrg == undefined) {
+        toDrg = JsCalc.drg;
+    }
+
+    switch (toDrg) {
+    case 0:
+        return val * 180 / Math.PI;
+    case 1:
+        return val;
+    case 2:
+        return val * 200 / Math.PI;
+    default:
+        throw "Unknown base \"" + toDrg + "\"";
+    }
 }
 
 function fix(val) {
-    if (isNaN(val)) throw "Not A Number";
+    if (isNaN(val)) {
+        console.log('!!!!!!!!!!!!!');
+        throw "Not A Number";
+    }
     return val;
 }
 
