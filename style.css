@@ -107,12 +107,12 @@ sub {
     top: .6ex;
 }
 
-.key-wrapper {
+.btn-wrapper {
     position: relative;
     margin: 3px;
 }
 
-.key {
+.btn {
     /* width: 35px; */
     height: 35px;
     line-height: 35px;
@@ -136,7 +136,7 @@ sub {
     background: linear-gradient(to right,  #ededed 0%,#ededed 10%,#ffffff 50%,#ededed 90%,#ededed 100%); /* W3C */
 }
 
-.key#keyeq {
+.btn#btn-eq {
     position: absolute;
     top: 0;
     height: 76px; /*2x button + wrapper padding*/
@@ -145,13 +145,13 @@ sub {
     line-height: 76px;
 }
 
-.key.info {
+.btn.info {
     font-family: Times, serif;
     font-weight: bold;
     font-style: italic;
 }
 
-.key--grey {
+.btn--grey {
     background: #d0d0d0; /* Old browsers */
     background: -moz-linear-gradient(left,  #d0d0d0 0%, #d0d0d0 10%, #e2e2e2 50%, #d0d0d0 90%, #d0d0d0 100%); /* FF3.6+ */
     background: -webkit-gradient(linear, left top, right top, color-stop(0%,#d0d0d0), color-stop(10%,#d0d0d0), color-stop(50%,#e2e2e2), color-stop(90%,#d0d0d0), color-stop(100%,#d0d0d0)); /* Chrome,Safari4+ */
@@ -161,7 +161,7 @@ sub {
     background: linear-gradient(to right,  #d0d0d0 0%,#d0d0d0 10%,#e2e2e2 50%,#d0d0d0 90%,#d0d0d0 100%); /* W3C */
 }
 
-.key--orange {
+.btn--orange {
     background: #f2b36f; /* Old browsers */
     background: -moz-linear-gradient(left,  #f2b36f 0%, #f2b36f 10%, #f2e7da 50%, #f2b36f 90%, #f2b36f 100%); /* FF3.6+ */
     background: -webkit-gradient(linear, left top, right top, color-stop(0%,#f2b36f), color-stop(10%,#f2b36f), color-stop(50%,#f2e7da), color-stop(90%,#f2b36f), color-stop(100%,#f2b36f)); /* Chrome,Safari4+ */
@@ -171,6 +171,6 @@ sub {
     background: linear-gradient(to right,  #f2b36f 0%,#f2b36f 10%,#f2e7da 50%,#f2b36f 90%,#f2b36f 100%); /* W3C */
 }
 
-.key.on {
+.btn.on {
     opacity: 0.8
 }

@@ -8,26 +8,26 @@ window.JsCalc = {
 };
 
 JsCalc.buttons = {
-    deg: {style: 'drg key--grey', help: 'Set trignometric mode to degrees'},
-    rad: {style: 'drg key--grey', help: 'Set trignometric mode to radians'},
-    grad: {style: 'drg key--grey', help: 'Set trignometric mode to gradients'},
+    deg: {style: 'drg btn--grey', help: 'Set trignometric mode to degrees'},
+    rad: {style: 'drg btn--grey', help: 'Set trignometric mode to radians'},
+    grad: {style: 'drg btn--grey', help: 'Set trignometric mode to gradients'},
     info: {style: 'info', sym: 'i', help: 'Show the info panel'},
-    hex: {style: 'base key--grey', help: 'Convert expression to base 16'},
-    oct: {style: 'base key--grey', help: 'Convert expression to base 8'},
-    bin: {style: 'base key--grey', help: 'Convert expression to base 2'},
-    utf8: {style: 'base key--grey', help: 'Convert expression to UTF-8 character'},
-    sin: {style: 'funcs key--grey', help: 'Calculate sine of expression'},
-    asin: {style: 'funcs key--grey', sym: 'sin<sup>-1</sup>', help: 'Calculate the inverse sine of expression'},
-    sqrt: {style: 'funcs key--grey', sym: '&radic;', help: 'Calculate the square root of expression'},
-    abs: {style: 'funcs key--grey', help: 'Calculate the absolute value expression'},
-    cos: {style: 'funcs key--grey', help: 'Calculate the co-sine of expression'},
-    acos: {style: 'funcs key--grey', sym: 'cos<sup>-1</sup>', help: 'Calculate the inverse co-sine of expression'},
-    cbrt: {style: 'funcs key--grey', sym: '<sup style="margin-right:-2pt">3</sup>&radic;', help: 'Calculate the cube root of expression'},
-    pow: {style: 'funcs key--grey', sym: 'x<sup>&nbsp;y</sup>', help: 'Raise expression to the specified power'},
-    tan: {style: 'funcs key--grey', help: 'Calculate the tangent of expression'},
-    atan: {style: 'funcs key--grey', sym: 'tan<sup>-1</sup>', help: 'Calculate the inverse tangent of expression'},
-    pi: {style: 'funcs key--grey', sym: '&pi;', help: 'Insert the value of PI'},
-    magice: {style: 'funcs key--grey', sym: '<i>e</i>', help: 'Insert the natural logarithm value E'},
+    hex: {style: 'base btn--grey', help: 'Convert expression to base 16'},
+    oct: {style: 'base btn--grey', help: 'Convert expression to base 8'},
+    bin: {style: 'base btn--grey', help: 'Convert expression to base 2'},
+    utf8: {style: 'base btn--grey', help: 'Convert expression to UTF-8 character'},
+    sin: {style: 'funcs btn--grey', help: 'Calculate sine of expression'},
+    asin: {style: 'funcs btn--grey', sym: 'sin<sup>-1</sup>', help: 'Calculate the inverse sine of expression'},
+    sqrt: {style: 'funcs btn--grey', sym: '&radic;', help: 'Calculate the square root of expression'},
+    abs: {style: 'funcs btn--grey', help: 'Calculate the absolute value expression'},
+    cos: {style: 'funcs btn--grey', help: 'Calculate the co-sine of expression'},
+    acos: {style: 'funcs btn--grey', sym: 'cos<sup>-1</sup>', help: 'Calculate the inverse co-sine of expression'},
+    cbrt: {style: 'funcs btn--grey', sym: '<sup style="margin-right:-2pt">3</sup>&radic;', help: 'Calculate the cube root of expression'},
+    pow: {style: 'funcs btn--grey', sym: 'x<sup>&nbsp;y</sup>', help: 'Raise expression to the specified power'},
+    tan: {style: 'funcs btn--grey', help: 'Calculate the tangent of expression'},
+    atan: {style: 'funcs btn--grey', sym: 'tan<sup>-1</sup>', help: 'Calculate the inverse tangent of expression'},
+    pi: {style: 'funcs btn--grey', sym: '&pi;', help: 'Insert the value of PI'},
+    magice: {style: 'funcs btn--grey', sym: '<i>e</i>', help: 'Insert the natural logarithm value E'},
     1: {style: 'digits'},
     2: {style: 'digits'},
     3: {style: 'digits'},
@@ -40,12 +40,12 @@ JsCalc.buttons = {
     0: {style: 'digits'},
     plusminus: {style: 'digits', sym: '\u00B1'},
     decimal: {style: 'digits', sym: '.'},
-    div: {style: 'basefuncs key--grey', sym: '\u00F7'},
-    mul: {style: 'basefuncs key--grey', sym: '\u00D7'},
-    sub: {style: 'basefuncs key--grey', sym: '-'},
-    add: {style: 'basefuncs key--grey', sym: '+'},
-    clear: {style: 'edit key--orange', sym: 'AC', help: 'Clear the display (keypress: ESC)'},
-    bs: {style: 'edit key--orange', sym: '\u232B', help: 'Delete a character (keypress: Backspace)'},
+    div: {style: 'basefuncs btn--grey', sym: '\u00F7'},
+    mul: {style: 'basefuncs btn--grey', sym: '\u00D7'},
+    sub: {style: 'basefuncs btn--grey', sym: '-'},
+    add: {style: 'basefuncs btn--grey', sym: '+'},
+    clear: {style: 'edit btn--orange', sym: 'AC', help: 'Clear the display (keypress: ESC)'},
+    bs: {style: 'edit btn--orange', sym: '\u232B', help: 'Delete a character (keypress: Backspace)'},
     eq: {style: 'result', sym: '='}
 };
 
@@ -68,7 +68,7 @@ function draw() {
 }
 
 function createButtons() {
-    var btnSlots = document.querySelectorAll('.keyslot');
+    var btnSlots = document.querySelectorAll('.btn-slot');
     for (var i = 0; i < btnSlots.length; i++) {
         var slot = btnSlots[i];
         var id = slot.dataset.id;
@@ -82,9 +82,9 @@ function createButtons() {
 
 function createButton(props) {
     var button = document.createElement('div');
-    button.className = 'key ' + (props.style || '');
+    button.className = 'btn ' + (props.style || '');
     button.innerHTML = props.sym || props.id;
-    button.id = 'key' + props.id;
+    button.id = 'btn-' + props.id;
     if (props.help) {
         button.title = props.help;
     }
@@ -94,7 +94,7 @@ function createButton(props) {
     }, true);
 
     var wrapper = document.createElement('div');
-    wrapper.className = 'key-wrapper';
+    wrapper.className = 'btn-wrapper';
     wrapper.appendChild(button);
     return wrapper;
 }
@@ -307,7 +307,7 @@ function doButton(btn) {
 
     // Highlight the button by setting it's class list to "on"
     //
-    var key = document.getElementById("key"+btn);
+    var key = document.getElementById("btn-"+btn);
     if (key) {
         key.setAttribute("class", key.getAttribute("class")+" on");
         setTimeout(function() { key.setAttribute("class", key.getAttribute("class").replace(/ on$/,"")); }, 100);
