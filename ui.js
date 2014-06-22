@@ -297,7 +297,7 @@ function doButton(btn) {
             append(".");
             break;
           default:
-            append(btn)
+            append(btn);
             break;
         }
     } catch (err) {
@@ -309,8 +309,8 @@ function doButton(btn) {
     //
     var key = document.getElementById("btn-"+btn);
     if (key) {
-        key.setAttribute("class", key.getAttribute("class")+" on");
-        setTimeout(function() { key.setAttribute("class", key.getAttribute("class").replace(/ on$/,"")); }, 100);
+        key.setAttribute("class", key.getAttribute("class")+" btn--down");
+        setTimeout(function() { key.setAttribute("class", key.getAttribute("class").replace(/ btn--down$/,"")); }, 200);
     }
 
     // Update the panel
