@@ -8,26 +8,26 @@ window.JsCalc = {
 };
 
 JsCalc.buttons = {
-    deg: {style: 'drg', help: 'Set trignometric mode to degrees'},
-    rad: {style: 'drg', help: 'Set trignometric mode to radians'},
-    grad: {style: 'drg', help: 'Set trignometric mode to gradients'},
+    deg: {style: 'drg key--grey', help: 'Set trignometric mode to degrees'},
+    rad: {style: 'drg key--grey', help: 'Set trignometric mode to radians'},
+    grad: {style: 'drg key--grey', help: 'Set trignometric mode to gradients'},
     info: {style: 'info', sym: 'i', help: 'Show the info panel'},
-    hex: {style: 'base', help: 'Convert expression to base 16'},
-    oct: {style: 'base', help: 'Convert expression to base 8'},
-    bin: {style: 'base', help: 'Convert expression to base 2'},
-    utf8: {style: 'base', help: 'Convert expression to UTF-8 character'},
-    sin: {style: 'funcs', help: 'Calculate sine of expression'},
-    asin: {style: 'funcs', sym: 'sin<sup>-1</sup>', help: 'Calculate the inverse sine of expression'},
-    sqrt: {style: 'funcs', sym: '&radic;', help: 'Calculate the square root of expression'},
-    abs: {style: 'funcs', help: 'Calculate the absolute value expression'},
-    cos: {style: 'funcs', help: 'Calculate the co-sine of expression'},
-    acos: {style: 'funcs', sym: 'cos<sup>-1</sup>', help: 'Calculate the inverse co-sine of expression'},
-    cbrt: {style: 'funcs', sym: '<sup style="margin-right:-2pt">3</sup>&radic;', help: 'Calculate the cube root of expression'},
-    pow: {style: 'funcs', sym: 'x<sup>&nbsp;y</sup>', help: 'Raise expression to the specified power'},
-    tan: {style: 'funcs', help: 'Calculate the tangent of expression'},
-    atan: {style: 'funcs', sym: 'tan<sup>-1</sup>', help: 'Calculate the inverse tangent of expression'},
-    pi: {style: 'funcs', sym: '&pi;', help: 'Insert the value of PI'},
-    magice: {style: 'funcs', sym: '<i>e</i>', help: 'Insert the natural logarithm value E'},
+    hex: {style: 'base key--grey', help: 'Convert expression to base 16'},
+    oct: {style: 'base key--grey', help: 'Convert expression to base 8'},
+    bin: {style: 'base key--grey', help: 'Convert expression to base 2'},
+    utf8: {style: 'base key--grey', help: 'Convert expression to UTF-8 character'},
+    sin: {style: 'funcs key--grey', help: 'Calculate sine of expression'},
+    asin: {style: 'funcs key--grey', sym: 'sin<sup>-1</sup>', help: 'Calculate the inverse sine of expression'},
+    sqrt: {style: 'funcs key--grey', sym: '&radic;', help: 'Calculate the square root of expression'},
+    abs: {style: 'funcs key--grey', help: 'Calculate the absolute value expression'},
+    cos: {style: 'funcs key--grey', help: 'Calculate the co-sine of expression'},
+    acos: {style: 'funcs key--grey', sym: 'cos<sup>-1</sup>', help: 'Calculate the inverse co-sine of expression'},
+    cbrt: {style: 'funcs key--grey', sym: '<sup style="margin-right:-2pt">3</sup>&radic;', help: 'Calculate the cube root of expression'},
+    pow: {style: 'funcs key--grey', sym: 'x<sup>&nbsp;y</sup>', help: 'Raise expression to the specified power'},
+    tan: {style: 'funcs key--grey', help: 'Calculate the tangent of expression'},
+    atan: {style: 'funcs key--grey', sym: 'tan<sup>-1</sup>', help: 'Calculate the inverse tangent of expression'},
+    pi: {style: 'funcs key--grey', sym: '&pi;', help: 'Insert the value of PI'},
+    magice: {style: 'funcs key--grey', sym: '<i>e</i>', help: 'Insert the natural logarithm value E'},
     1: {style: 'digits'},
     2: {style: 'digits'},
     3: {style: 'digits'},
@@ -40,12 +40,12 @@ JsCalc.buttons = {
     0: {style: 'digits'},
     plusminus: {style: 'digits', sym: '\u00B1'},
     decimal: {style: 'digits', sym: '.'},
-    div: {style: 'funcs', sym: '\u00F7'},
-    mul: {style: 'funcs', sym: '\u00D7'},
-    sub: {style: 'funcs', sym: '-'},
-    add: {style: 'funcs', sym: '+'},
-    clear: {style: 'erase', sym: 'AC', help: 'Clear the display (keypress: ESC)'},
-    bs: {style: 'erase', sym: '\u232B', help: 'Delete a character (keypress: Backspace)'},
+    div: {style: 'basefuncs key--grey', sym: '\u00F7'},
+    mul: {style: 'basefuncs key--grey', sym: '\u00D7'},
+    sub: {style: 'basefuncs key--grey', sym: '-'},
+    add: {style: 'basefuncs key--grey', sym: '+'},
+    clear: {style: 'edit key--orange', sym: 'AC', help: 'Clear the display (keypress: ESC)'},
+    bs: {style: 'edit key--orange', sym: '\u232B', help: 'Delete a character (keypress: Backspace)'},
     eq: {style: 'result', sym: '='}
 };
 
@@ -59,7 +59,6 @@ window.addEventListener("load", onLoad, true);
 
 function onLoad() {
     draw();
-    document.getElementById("x").innerHTML = navigator.userAgent;
 }
 
 function draw() {
