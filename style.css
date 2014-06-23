@@ -1,8 +1,12 @@
+html {
+    font-size: 10pt;
+}
+
 body {
     left: 0;
     top: 0;
     margin: 0;
-    font-family: Helvetica, sans-serif;
+    font-family: Ubuntu, Helvetica, sans-serif;
     font-weight: 200;
 }
 
@@ -36,7 +40,7 @@ body {
 }
 
 #backcontent {
-    font-size: 10pt;
+    font-size: 1rem;
     margin: 10px;
 }
 
@@ -68,7 +72,7 @@ body {
     bottom: 0;
     text-align: right;
     white-space: pre;
-    font-size: 17pt;
+    font-size: 1.7rem;
     font-family: Courier New, monospace;
     line-height: 40px;
     text-align: right;
@@ -79,7 +83,7 @@ body {
     position: absolute;
     top: 5px;
     left: 5px;
-    font-size: 7pt;
+    font-size: .7rem;
     color: gray;
 }
 
@@ -87,7 +91,7 @@ body {
     position: absolute;
     bottom: 5px;
     left: 5px;
-    font-size: 8pt;
+    font-size: .8rem;
     color: red;
 }
 
@@ -145,7 +149,7 @@ sub {
     left: 0;
     right: 0;
 
-    font-size: 9pt;
+    font-size: .9rem;
     font-weight: 100;
     text-align: center;
     opacity: 1;
@@ -223,14 +227,12 @@ sub {
     background: linear-gradient(to right,  #f2b36f 0%,#f2b36f 10%,#f2e7da 50%,#f2b36f 90%,#f2b36f 100%); /* W3C */
 }
 
-    .func-buttons .btn-wrapper:before {
-        content: "";
-        display: block;
-        padding-top: 58.5%; /* keeping button ratio 60% */
-    }
+.func-buttons .btn-wrapper:before {
+    content: "";
+    display: block;
+    padding-top: 50%; /* keeping button ratio 50% */
+}
 
-/* @media (min-width: 250px) and (max-width: 400px) { */
-    .func-buttons .btn {
-        font-size: .55em;
-    }
-/* } */
+.func-buttons .btn {
+    font-size: .8rem;
+}
