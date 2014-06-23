@@ -10,6 +10,23 @@ function SciCal() {
     this.drg = 0;               // 0 - degrees, 1 - radians, 2 - gradians
 }
 
+SciCal.prototype.getDisplayText = function() {
+    return this.panelvalue;
+};
+
+SciCal.prototype.setDisplayText = function(text) {
+    //todo parsing stuff first?
+    this.panelvalue = text;
+};
+
+SciCal.prototype.getErrorText = function() {
+    return this.errorvalue;
+};
+
+SciCal.prototype.getCursorOffset = function() {
+    return this.paneloffset;
+};
+
 SciCal.prototype.PI = function() {
     return Math.PI;
 };
@@ -166,6 +183,7 @@ SciCal.prototype.onButton = function(btn) {
     } catch (err) {
         this.panelvalue = "E";
         this.errorvalue = err;
+        this.paneloffset = 0;
     }
 };
 

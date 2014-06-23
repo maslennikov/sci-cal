@@ -158,21 +158,21 @@ function eventKeyPress(event) {
 }
 
 function eventCopy(event) {
-    event.clipboardData.setData('text/plain', JsCalc.panelvalue);
+    event.clipboardData.setData('text/plain', JsCalc.getDisplayText());
     event.preventDefault();
     event.stopPropagation();
 }
 
 function eventCut(event) {              // Likely to be Safari only
-    event.clipboardData.setData('text/plain', JsCalc.panelvalue);
+    event.clipboardData.setData('text/plain', JsCalc.getDisplayText());
     event.preventDefault();
     event.stopPropagation();
     doButton("clear");
 }
 
 function eventPaste(event) {            // Likely to be Safari only
-    JsCalc.panelvalue = event.clipboardData.getData('text/plain');
-    JsCalc.panelvalue = JsCalc.panelvalue.replace(/,/g, '');
+    var text = event.clipboardData.getData('text/plain');
+    JsCalc.setDisplayText(text.replace(/,/g, ''));
     event.preventDefault();
     event.stopPropagation();
     doButton("");
@@ -199,8 +199,8 @@ function doButton(btn) {
 
     // Update the panel
     //
-    document.getElementById("display-error").innerHTML = JsCalc.errorvalue;
-    document.getElementById("display-content").innerHTML = displayformat(JsCalc.panelvalue);
+    document.getElementById("display-error").innerHTML = JsCalc.getErrorText();
+    document.getElementById("display-content").innerHTML = displayformat(JsCalc.getDisplayText());
 }
 
 
@@ -210,9 +210,12 @@ function doButton(btn) {
 function displayformat(val) {
     val = val || "0";
     // val = zero(val);
-    val = "&nbsp;"+val.substring(0, val.length - JsCalc.paneloffset) +
-        "<span class=\"display-cursor\">" + (val[val.length - JsCalc.paneloffset] || "") +
-        "</span>" + val.substring(val.length - JsCalc.paneloffset + 1);
+    var cursor = JsCalc.getCursorOffset();
+    val = "&nbsp;" + val.substring(0, val.length - cursor) +
+        "<span class=\"display-cursor\">" +
+        (val[val.length - cursor] || "") +
+        "</span>" +
+        val.substring(val.length - cursor + 1);
     return val;
 }
 
