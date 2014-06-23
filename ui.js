@@ -179,137 +179,14 @@ function eventPaste(event) {            // Likely to be Safari only
 }
 
 
-
 // Called whenever a button is pressed or clicked
 //
 function doButton(btn) {
 //    window.status=btn;
-    try {
-        switch(btn) {
-          case '':
-            break;
-          case "info":
-            swapPanel("front", "back");
-            return;
-            break;
-          case "left":
-            JsCalc.paneloffset++;
-            if (JsCalc.paneloffset>JsCalc.panelvalue.length) JsCalc.paneloffset--;
-            break;
-          case "right":
-            JsCalc.paneloffset--;
-            if (JsCalc.paneloffset<0) JsCalc.paneloffset=0
-            break;
-          case "bs":
-            JsCalc.panelvalue = JsCalc.panelvalue.substring(0, JsCalc.panelvalue.length-JsCalc.paneloffset-1) + JsCalc.panelvalue.substring(JsCalc.panelvalue.length-JsCalc.paneloffset);
-            if (JsCalc.panelvalue=="") {
-                JsCalc.panelvalue="";
-                JsCalc.errorvalue="";
-            }
-            if (JsCalc.paneloffset > JsCalc.panelvalue.length) JsCalc.paneloffset--;
-            break;
-          case "clear":
-            JsCalc.panelvalue = "";
-            JsCalc.errorvalue = "";
-            JsCalc.paneloffset=0;
-            break;
-          case "plusminus":
-            if (JsCalc.panelvalue.charAt(0)=='-') {
-                JsCalc.panelvalue = JsCalc.panelvalue.substring(1);
-            } else {
-                JsCalc.panelvalue = "-"+JsCalc.panelvalue;
-            }
-            break;
-          case "pi":
-            append("PI()");
-            break;
-          case "magice":
-            append("E()");
-            break;
-          case "sqrt":
-            JsCalc.panelvalue = "sqrt("+zero(JsCalc.panelvalue)+")";
-            break;
-          case "cbrt":
-            JsCalc.panelvalue = "cbrt("+zero(JsCalc.panelvalue)+")";
-            break;
-          case "abs":
-            JsCalc.panelvalue = "abs("+zero(JsCalc.panelvalue)+")";
-            break;
-          case "log":
-            JsCalc.panelvalue = "log("+zero(JsCalc.panelvalue)+")";
-            break;
-          case "sin":
-            JsCalc.panelvalue = "sin("+zero(JsCalc.panelvalue)+")";
-            break;
-          case "cos":
-            JsCalc.panelvalue = "cos("+zero(JsCalc.panelvalue)+")";
-            break;
-          case "tan":
-            JsCalc.panelvalue = "tan("+zero(JsCalc.panelvalue)+")";
-            break;
-          case "asin":
-            JsCalc.panelvalue = "asin("+zero(JsCalc.panelvalue)+")";
-            break;
-          case "acos":
-            JsCalc.panelvalue = "acos("+zero(JsCalc.panelvalue)+")";
-            break;
-          case "atan":
-            JsCalc.panelvalue = "atan("+zero(JsCalc.panelvalue)+")";
-            break;
-          case "pow":
-            JsCalc.panelvalue = "pow("+zero(JsCalc.panelvalue)+",)";
-            JsCalc.paneloffset = 1;
-            break;
-          case "hex":
-            JsCalc.panelvalue = "hex("+zero(JsCalc.panelvalue)+")";
-            break;
-          case "oct":
-            JsCalc.panelvalue = "oct("+zero(JsCalc.panelvalue)+")";
-            break;
-          case "bin":
-            JsCalc.panelvalue = "bin("+zero(JsCalc.panelvalue)+")";
-            break;
-          case "utf8":
-            JsCalc.panelvalue = "utf8("+zero(JsCalc.panelvalue)+")";
-            break;
-          case 'drg':
-            var old = JsCalc.drg;
-            JsCalc.drg = (old + 1) % 3;
-            document.getElementById("display-mode").innerHTML =
-                (['deg', 'rad', 'grad'])[JsCalc.drg];
-
-            if (JsCalc.panelvalue) {
-                var val = JsCalc.myeval(JsCalc.panelvalue);
-                val = JsCalc.atrig(JsCalc.trig(val, old), JsCalc.drg);
-                JsCalc.panelvalue = JsCalc.fix(val).toString();
-            }
-            break;
-          case "eq":
-            var out = JsCalc.panelvalue=="" ? "" : JsCalc.myeval(JsCalc.panelvalue);
-            JsCalc.panelvalue = out.toString();
-            break;
-          case "sub":
-            append("-");
-            break;
-          case "add":
-            append("+");
-            break;
-          case "mul":
-            append("*");
-            break;
-          case "div":
-            append("/");
-            break;
-          case "decimal":
-            append(".");
-            break;
-          default:
-            append(btn);
-            break;
-        }
-    } catch (err) {
-        JsCalc.panelvalue = "E";
-        JsCalc.errorvalue = err;
+    if (btn == 'info') {
+        swapPanel("front", "back");
+    } else {
+        JsCalc.onButton(btn);
     }
 
     // Highlight the button by setting it's class list to "on"
@@ -326,24 +203,17 @@ function doButton(btn) {
     document.getElementById("display-content").innerHTML = displayformat(JsCalc.panelvalue);
 }
 
-// Add some content to the panel value at the panel offset
-//
-function append(val) {
-    JsCalc.panelvalue = JsCalc.panelvalue.substring(0,JsCalc.panelvalue.length-JsCalc.paneloffset) + val + JsCalc.panelvalue.substring(JsCalc.panelvalue.length-JsCalc.paneloffset);
-}
+
 
 // Format the panelvalue for display - we insert the cursor at the right place
 //
 function displayformat(val) {
-    val = zero(val);
+    val = val || "0";
+    // val = zero(val);
     val = "&nbsp;"+val.substring(0, val.length - JsCalc.paneloffset) +
         "<span class=\"display-cursor\">" + (val[val.length - JsCalc.paneloffset] || "") +
         "</span>" + val.substring(val.length - JsCalc.paneloffset + 1);
     return val;
-}
-
-function zero(val) {
-   return val=="" ? "0" : val;
 }
 
 function swapPanel(from, to) {

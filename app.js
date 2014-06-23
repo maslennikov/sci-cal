@@ -159,3 +159,143 @@ SciCal.prototype.myeval = function(val) {
     this.errorvalue="";
     return val;
 };
+
+SciCal.prototype.onButton = function(btn) {
+    try {
+        this._onButton(btn);
+    } catch (err) {
+        this.panelvalue = "E";
+        this.errorvalue = err;
+    }
+};
+
+SciCal.prototype._onButton = function(btn) {
+    switch(btn) {
+    case '':
+        return;
+    case "left":
+        this.paneloffset++;
+        if (this.paneloffset>this.panelvalue.length) this.paneloffset--;
+        break;
+    case "right":
+        this.paneloffset--;
+        if (this.paneloffset<0) this.paneloffset=0;
+        break;
+    case "bs":
+        this.panelvalue = this.panelvalue.substring(0, this.panelvalue.length-this.paneloffset-1) + this.panelvalue.substring(this.panelvalue.length-this.paneloffset);
+        if (this.panelvalue=="") {
+            this.panelvalue="";
+            this.errorvalue="";
+        }
+        if (this.paneloffset > this.panelvalue.length) this.paneloffset--;
+        break;
+    case "clear":
+        this.panelvalue = "";
+        this.errorvalue = "";
+        this.paneloffset=0;
+        break;
+    case "plusminus":
+        if (this.panelvalue.charAt(0)=='-') {
+            this.panelvalue = this.panelvalue.substring(1);
+        } else {
+            this.panelvalue = "-"+this.panelvalue;
+        }
+        break;
+    case "pi":
+        this.append("PI()");
+        break;
+    case "magice":
+        this.append("E()");
+        break;
+    case "sqrt":
+        this.panelvalue = "sqrt("+zero(this.panelvalue)+")";
+        break;
+    case "cbrt":
+        this.panelvalue = "cbrt("+zero(this.panelvalue)+")";
+        break;
+    case "abs":
+        this.panelvalue = "abs("+zero(this.panelvalue)+")";
+        break;
+    case "log":
+        this.panelvalue = "log("+zero(this.panelvalue)+")";
+        break;
+    case "sin":
+        this.panelvalue = "sin("+zero(this.panelvalue)+")";
+        break;
+    case "cos":
+        this.panelvalue = "cos("+zero(this.panelvalue)+")";
+        break;
+    case "tan":
+        this.panelvalue = "tan("+zero(this.panelvalue)+")";
+        break;
+    case "asin":
+        this.panelvalue = "asin("+zero(this.panelvalue)+")";
+        break;
+    case "acos":
+        this.panelvalue = "acos("+zero(this.panelvalue)+")";
+        break;
+    case "atan":
+        this.panelvalue = "atan("+zero(this.panelvalue)+")";
+        break;
+    case "pow":
+        this.panelvalue = "pow("+zero(this.panelvalue)+",)";
+        this.paneloffset = 1;
+        break;
+    case "hex":
+        this.panelvalue = "hex("+zero(this.panelvalue)+")";
+        break;
+    case "oct":
+        this.panelvalue = "oct("+zero(this.panelvalue)+")";
+        break;
+    case "bin":
+        this.panelvalue = "bin("+zero(this.panelvalue)+")";
+        break;
+    case "utf8":
+        this.panelvalue = "utf8("+zero(this.panelvalue)+")";
+        break;
+    case 'drg':
+        var old = this.drg;
+        this.drg = (old + 1) % 3;
+        document.getElementById("display-mode").innerHTML =
+            (['deg', 'rad', 'grad'])[this.drg];
+
+        if (this.panelvalue) {
+            var val = this.myeval(this.panelvalue);
+            val = this.atrig(this.trig(val, old), this.drg);
+            this.panelvalue = this.fix(val).toString();
+        }
+        break;
+    case "eq":
+        var out = this.panelvalue=="" ? "" : this.myeval(this.panelvalue);
+        this.panelvalue = out.toString();
+        break;
+    case "sub":
+        this.append("-");
+        break;
+    case "add":
+        this.append("+");
+        break;
+    case "mul":
+        this.append("*");
+        break;
+    case "div":
+        this.append("/");
+        break;
+    case "decimal":
+        this.append(".");
+        break;
+    default:
+        this.append(btn);
+        break;
+    }
+};
+
+SciCal.prototype.append = function(val) {
+    var text = this.panelvalue;
+    this.panelvalue = text.substring(0, text.length - this.paneloffset)
+        + val + text.substring(text.length - this.paneloffset);
+};
+
+function zero(val) {
+   return val=="" ? "0" : val;
+}
