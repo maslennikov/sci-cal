@@ -1,14 +1,7 @@
-/**
- * Here goes everything related to the app user interface
- */
-window.JsCalc = {
-    panelvalue: '',             // Value displayed in the panel
-    errorvalue: '',             // Value displayed in the error panel
-    paneloffset: 0,             // How far in from the right we've cursored in
-    drg: 0                      // 0 - degrees, 1 - radians, 2 - gradians
-};
+window.JsCalc = new SciCal();
 
-JsCalc.buttons = {
+//todo[maslennikov] make it all in handlebars
+var calcButtons = {
     // deg: {style: 'drg btn--grey', help: 'Set trignometric mode to degrees'},
     // rad: {style: 'drg btn--grey', help: 'Set trignometric mode to radians'},
     // grad: {style: 'drg btn--grey', help: 'Set trignometric mode to gradians'},
@@ -75,7 +68,7 @@ function createButtons() {
     for (var i = 0; i < btnSlots.length; i++) {
         var slot = btnSlots[i];
         var id = slot.dataset.id;
-        var props = JsCalc.buttons[id];
+        var props = calcButtons[id];
         if (props) {
             props.id = id;
             slot.appendChild(createButton(props));
@@ -286,13 +279,13 @@ function doButton(btn) {
                 (['deg', 'rad', 'grad'])[JsCalc.drg];
 
             if (JsCalc.panelvalue) {
-                var val = myeval(JsCalc.panelvalue);
-                val = atrig(trig(val, old), JsCalc.drg);
-                JsCalc.panelvalue = fix(val).toString();
+                var val = JsCalc.myeval(JsCalc.panelvalue);
+                val = JsCalc.atrig(JsCalc.trig(val, old), JsCalc.drg);
+                JsCalc.panelvalue = JsCalc.fix(val).toString();
             }
             break;
           case "eq":
-            var out = JsCalc.panelvalue=="" ? "" : myeval(JsCalc.panelvalue);
+            var out = JsCalc.panelvalue=="" ? "" : JsCalc.myeval(JsCalc.panelvalue);
             JsCalc.panelvalue = out.toString();
             break;
           case "sub":

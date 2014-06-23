@@ -1,36 +1,101 @@
-/**
- * Here goes all calculator-related stuff
- */
+'use strict';
 
-function PI()           { return Math.PI; }
-function E()            { return Math.E; }
-function pow(val,base)  { return Math.pow(val,base); }
-function utf8(val)      { return "\""+String.fromCharCode(val)+"\""; }
-function log(val)       { return Math.log(val); }
-function abs(val)       { return Math.abs(val); }
-function sin(val)       { return Math.sin(trig(val)); }
-function cos(val)       { return Math.cos(trig(val)); }
-function tan(val)       { return Math.tan(trig(val)); }
-function asin(val)      { return atrig(Math.asin(val)); }
-function acos(val)      { return atrig(Math.acos(val)); }
-function atan(val)      { return atrig(Math.atan(val)); }
-function sqrt(val)      { return Math.sqrt(val); }
-function cbrt(val)      { return Math.sqrt(Math.sqrt(val)); }
-function hex(val)       { return base(val,16); }
-function oct(val)       { return base(val,8); }
-function bin(val)       { return base(val,2); }
-function base(val,base) {
-    var num = parseFloat(val);
-    if (num!=Math.floor(num)) throw "Not an Integer";
-    return (num<0?"-":"")+(base==16?"0x":base==8?"0":base==2?"%":base==10?"":"?")+(Math.abs(num).toString(base));
+/**
+ * A calculator model
+ */
+function SciCal() {
+    this.panelvalue = '';       // Value displayed in the panel
+    this.errorvalue = '';       // Value displayed in the error panel
+    this.paneloffset = 0;       // How far in from the right we've cursored in
+    this.drg = 0;               // 0 - degrees, 1 - radians, 2 - gradians
 }
+
+SciCal.prototype.PI = function() {
+    return Math.PI;
+};
+
+SciCal.prototype.E = function() {
+    return Math.E;
+};
+
+SciCal.prototype.pow = function(val, base) {
+    return Math.pow(val,base);
+};
+
+SciCal.prototype.utf8 = function(val) {
+    return "\""+String.fromCharCode(val)+"\"";
+};
+
+SciCal.prototype.log = function(val) {
+    return Math.log(val);
+};
+
+SciCal.prototype.abs = function(val) {
+    return Math.abs(val);
+};
+
+SciCal.prototype.sin = function(val) {
+    return Math.sin(this.trig(val));
+};
+
+SciCal.prototype.cos = function(val) {
+    return Math.cos(this.trig(val));
+};
+
+SciCal.prototype.tan = function(val) {
+    return Math.tan(this.trig(val));
+};
+
+SciCal.prototype.asin = function(val) {
+    return this.atrig(Math.asin(val));
+};
+
+SciCal.prototype.acos = function(val) {
+    return this.atrig(Math.acos(val));
+};
+
+SciCal.prototype.atan = function(val) {
+    return this.atrig(Math.atan(val));
+};
+
+SciCal.prototype.sqrt = function(val) {
+    return Math.sqrt(val);
+};
+
+SciCal.prototype.cbrt = function(val) {
+    return Math.sqrt(Math.sqrt(val));
+};
+
+SciCal.prototype.hex = function(val) {
+    return this.base(val, 16);
+};
+
+SciCal.prototype.oct = function(val) {
+    return this.base(val, 8);
+};
+
+SciCal.prototype.bin = function(val) {
+    return this.base(val, 2);
+};
+
+SciCal.prototype.base = function(val, base) {
+    var num = parseFloat(val);
+    if (num != Math.floor(num)) throw "Not an Integer";
+    var prefix = num < 0 ? "-" : "";
+    prefix += base == 16 ? "0x"
+        : base == 8 ? "0"
+        : base == 2 ? "%"
+        : base == 10 ? ""
+        : "?";
+    return prefix + Math.abs(num).toString(base);
+};
 
 /**
  * Convert value from current mode to radians
  */
-function trig(val, fromDrg) {
+SciCal.prototype.trig = function(val, fromDrg) {
     if (fromDrg == undefined) {
-        fromDrg = JsCalc.drg;
+        fromDrg = this.drg;
     }
 
     switch (fromDrg) {
@@ -43,14 +108,14 @@ function trig(val, fromDrg) {
     default:
         throw "Unknown base \"" + fromDrg + "\"";
     }
-}
+};
 
 /**
  * Convert value from radians to current mode
  */
-function atrig(val, toDrg) {
+SciCal.prototype.atrig = function(val, toDrg) {
     if (toDrg == undefined) {
-        toDrg = JsCalc.drg;
+        toDrg = this.drg;
     }
 
     switch (toDrg) {
@@ -63,20 +128,22 @@ function atrig(val, toDrg) {
     default:
         throw "Unknown base \"" + toDrg + "\"";
     }
-}
+};
 
-function fix(val) {
+SciCal.prototype.fix = function(val) {
     if (isNaN(val)) {
         console.log('!!!!!!!!!!!!!');
         throw "Not A Number";
     }
     return val;
-}
+};
 
 /**
  * Evaluate the value and return it as an integer. Handles binary base etc.
  */
-function myeval(val) {
+SciCal.prototype.myeval = function(val) {
+    var self = this;
+
     if (val=="") return 0;
     if (val=="E") return "E";
     val = val.toString();
@@ -85,7 +152,10 @@ function myeval(val) {
         throw "Illegal Binary Digit";
     }
     val = val.replace(/%([01]+)/g, function(m,p1){return parseInt(p1,2)});
+
+    //quick and dirty: replace all function calls with method calls
+    val = val.replace(/([\w]+)\(/g, 'self.$1(');
     val = eval(val);
-    errorvalue="";
+    this.errorvalue="";
     return val;
-}
+};
