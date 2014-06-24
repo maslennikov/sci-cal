@@ -1,101 +1,85 @@
 'use strict';
 
-/**
- * A calculator model
- */
-function SciCal() {
-    this.panelvalue = '';       // Value displayed in the panel
-    this.errorvalue = '';       // Value displayed in the error panel
-    this.paneloffset = 0;       // How far in from the right we've cursored in
-    this.drg = 0;               // 0 - degrees, 1 - radians, 2 - gradians
-}
+window.App = window.App || {};
 
-SciCal.prototype.getDisplayText = function() {
-    return this.panelvalue;
-};
+App.SciCal = Backbone.Model.extend({
+    defaults: {
+        panelvalue: '',       // Value displayed in the panel
+        errorvalue: '',       // Value displayed in the error panel
+        paneloffset: 0,       // How far in from the right we've cursored in
+        drg: 0                // 0 - degrees, 1 - radians, 2 - gradians
+    }
+});
 
-SciCal.prototype.setDisplayText = function(text) {
-    //todo parsing stuff first?
-    this.panelvalue = text;
-};
-
-SciCal.prototype.getErrorText = function() {
-    return this.errorvalue;
-};
-
-SciCal.prototype.getCursorOffset = function() {
-    return this.paneloffset;
-};
-
-SciCal.prototype.PI = function() {
+App.SciCal.prototype.PI = function() {
     return Math.PI;
 };
 
-SciCal.prototype.E = function() {
+App.SciCal.prototype.E = function() {
     return Math.E;
 };
 
-SciCal.prototype.pow = function(val, base) {
+App.SciCal.prototype.pow = function(val, base) {
     return Math.pow(val,base);
 };
 
-SciCal.prototype.utf8 = function(val) {
+App.SciCal.prototype.utf8 = function(val) {
     return "\""+String.fromCharCode(val)+"\"";
 };
 
-SciCal.prototype.log = function(val) {
+App.SciCal.prototype.log = function(val) {
     return Math.log(val);
 };
 
-SciCal.prototype.abs = function(val) {
+App.SciCal.prototype.abs = function(val) {
     return Math.abs(val);
 };
 
-SciCal.prototype.sin = function(val) {
+App.SciCal.prototype.sin = function(val) {
     return Math.sin(this.trig(val));
 };
 
-SciCal.prototype.cos = function(val) {
+App.SciCal.prototype.cos = function(val) {
     return Math.cos(this.trig(val));
 };
 
-SciCal.prototype.tan = function(val) {
+App.SciCal.prototype.tan = function(val) {
     return Math.tan(this.trig(val));
 };
 
-SciCal.prototype.asin = function(val) {
+App.SciCal.prototype.asin = function(val) {
     return this.atrig(Math.asin(val));
 };
 
-SciCal.prototype.acos = function(val) {
+App.SciCal.prototype.acos = function(val) {
     return this.atrig(Math.acos(val));
 };
 
-SciCal.prototype.atan = function(val) {
+App.SciCal.prototype.atan = function(val) {
     return this.atrig(Math.atan(val));
 };
 
-SciCal.prototype.sqrt = function(val) {
+App.SciCal.prototype.sqrt = function(val) {
     return Math.sqrt(val);
 };
 
-SciCal.prototype.cbrt = function(val) {
+App.SciCal.prototype.cbrt = function(val) {
     return Math.sqrt(Math.sqrt(val));
 };
 
-SciCal.prototype.hex = function(val) {
+App.SciCal.prototype.hex = function(val) {
     return this.base(val, 16);
 };
 
-SciCal.prototype.oct = function(val) {
+App.SciCal.prototype.oct = function(val) {
     return this.base(val, 8);
 };
 
-SciCal.prototype.bin = function(val) {
+App.SciCal.prototype.bin = function(val) {
     return this.base(val, 2);
 };
 
-SciCal.prototype.base = function(val, base) {
+App.SciCal.prototype.base = function(val, base) {
     var num = parseFloat(val);
     if (num != Math.floor(num)) throw "Not an Integer";
     var prefix = num < 0 ? "-" : "";
@@ -110,7 +94,7 @@ SciCal.prototype.base = function(val, base) {
 /**
  * Convert value from current mode to radians
  */
-SciCal.prototype.trig = function(val, fromDrg) {
+App.SciCal.prototype.trig = function(val, fromDrg) {
     if (fromDrg == undefined) {
         fromDrg = this.drg;
     }
@@ -130,7 +114,7 @@ SciCal.prototype.trig = function(val, fromDrg) {
 /**
  * Convert value from radians to current mode
  */
-SciCal.prototype.atrig = function(val, toDrg) {
+App.SciCal.prototype.atrig = function(val, toDrg) {
     if (toDrg == undefined) {
         toDrg = this.drg;
     }
@@ -147,7 +131,7 @@ SciCal.prototype.atrig = function(val, toDrg) {
     }
 };
 
-SciCal.prototype.fix = function(val) {
+App.SciCal.prototype.fix = function(val) {
     if (isNaN(val)) {
         console.log('!!!!!!!!!!!!!');
         throw "Not A Number";
@@ -158,7 +142,7 @@ SciCal.prototype.fix = function(val) {
 /**
  * Evaluate the value and return it as an integer. Handles binary base etc.
  */
-SciCal.prototype.myeval = function(val) {
+App.SciCal.prototype.myeval = function(val) {
     var self = this;
 
     if (val=="") return 0;
@@ -177,7 +161,7 @@ SciCal.prototype.myeval = function(val) {
     return val;
 };
 
-SciCal.prototype.onButton = function(btn) {
+App.SciCal.prototype.onButton = function(btn) {
     try {
         this._onButton(btn);
     } catch (err) {
@@ -187,7 +171,8 @@ SciCal.prototype.onButton = function(btn) {
     }
 };
 
-SciCal.prototype._onButton = function(btn) {
+//todo shit is broken, change fields through set() or save() method?
+App.SciCal.prototype._onButton = function(btn) {
     switch(btn) {
     case '':
         return;
@@ -308,7 +293,7 @@ SciCal.prototype._onButton = function(btn) {
     }
 };
 
-SciCal.prototype.append = function(val) {
+App.SciCal.prototype.append = function(val) {
     var text = this.panelvalue;
     this.panelvalue = text.substring(0, text.length - this.paneloffset)
         + val + text.substring(text.length - this.paneloffset);

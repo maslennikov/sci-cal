@@ -1,28 +1,30 @@
-window.JsCalc = new SciCal();
+'use strict';
 
-//todo[maslennikov] make it all in handlebars
-var calcButtons = {
+window.App = window.App || {};
+
+//todo make it all in handlebars
+App.calcButtons = {
     // deg: {style: 'drg btn--grey', help: 'Set trignometric mode to degrees'},
     // rad: {style: 'drg btn--grey', help: 'Set trignometric mode to radians'},
     // grad: {style: 'drg btn--grey', help: 'Set trignometric mode to gradians'},
     drg: {style: 'drg btn--grey', help: 'Trignometric mode: degrees/radians/gradians'},
-    info: {style: 'info', sym: 'i', help: 'Show the info panel'},
+    info: {style: 'info', label: 'i', help: 'Show the info panel'},
     hex: {style: 'base btn--grey', help: 'Convert expression to base 16'},
     oct: {style: 'base btn--grey', help: 'Convert expression to base 8'},
     bin: {style: 'base btn--grey', help: 'Convert expression to base 2'},
     utf8: {style: 'base btn--grey', help: 'Convert expression to UTF-8 character'},
     sin: {style: 'funcs btn--grey', help: 'Calculate sine of expression'},
-    asin: {style: 'funcs btn--grey', sym: 'sin<sup>-1</sup>', help: 'Calculate the inverse sine of expression'},
-    sqrt: {style: 'funcs btn--grey', sym: '&radic;', help: 'Calculate the square root of expression'},
+    asin: {style: 'funcs btn--grey', label: 'sin<sup>-1</sup>', help: 'Calculate the inverse sine of expresnsion'},
+    sqrt: {style: 'funcs btn--grey', label: '&radic;', help: 'Calculate the square root of expression'},
     abs: {style: 'funcs btn--grey', help: 'Calculate the absolute value expression'},
     cos: {style: 'funcs btn--grey', help: 'Calculate the co-sine of expression'},
-    acos: {style: 'funcs btn--grey', sym: 'cos<sup>-1</sup>', help: 'Calculate the inverse co-sine of expression'},
-    cbrt: {style: 'funcs btn--grey', sym: '<sup style="margin-right:-2pt">3</sup>&radic;', help: 'Calculate the cube root of expression'},
-    pow: {style: 'funcs btn--grey', sym: 'x<sup>&nbsp;y</sup>', help: 'Raise expression to the specified power'},
+    acos: {style: 'funcs btn--grey', label: 'cos<sup>-1</sup>', help: 'Calculate the inverse co-sine of expression'},
+    cbrt: {style: 'funcs btn--grey', label: '<sup style="margin-right:-2pt">3</sup>&radic;', help: 'Calculate the cube root of expression'},
+    pow: {style: 'funcs btn--grey', label: 'x<sup>&nbsp;y</sup>', help: 'Raise expression to the specified power'},
     tan: {style: 'funcs btn--grey', help: 'Calculate the tangent of expression'},
-    atan: {style: 'funcs btn--grey', sym: 'tan<sup>-1</sup>', help: 'Calculate the inverse tangent of expression'},
-    pi: {style: 'funcs btn--grey', sym: '&pi;', help: 'Insert the value of PI'},
-    magice: {style: 'funcs btn--grey', sym: '<i>e</i>', help: 'Insert the natural logarithm value E'},
+    atan: {style: 'funcs btn--grey', label: 'tan<sup>-1</sup>', help: 'Calculate the inverse tangent of expression'},
+    pi: {style: 'funcs btn--grey', label: '&pi;', help: 'Insert the value of PI'},
+    magice: {style: 'funcs btn--grey', label: '<i>e</i>', help: 'Insert the natural logarithm value E'},
     1: {style: 'digits'},
     2: {style: 'digits'},
     3: {style: 'digits'},
@@ -33,116 +35,128 @@ var calcButtons = {
     8: {style: 'digits'},
     9: {style: 'digits'},
     0: {style: 'digits'},
-    plusminus: {style: 'digits', sym: '\u00B1'},
-    decimal: {style: 'digits', sym: '.'},
-    div: {style: 'basefuncs btn--grey', sym: '\u00F7'},
-    mul: {style: 'basefuncs btn--grey', sym: '\u00D7'},
-    sub: {style: 'basefuncs btn--grey', sym: '-'},
-    add: {style: 'basefuncs btn--grey', sym: '+'},
-    clear: {style: 'edit btn--orange', sym: 'AC', help: 'Clear the display (keypress: ESC)'},
-    bs: {style: 'edit btn--orange', sym: '\u232B', help: 'Delete a character (keypress: Backspace)'},
-    eq: {style: 'result', sym: '='}
+    plusminus: {style: 'digits', label: '\u00B1'},
+    decimal: {style: 'digits', label: '.'},
+    div: {style: 'basefuncs btn--grey', label: '\u00F7'},
+    mul: {style: 'basefuncs btn--grey', label: '\u00D7'},
+    sub: {style: 'basefuncs btn--grey', label: '-'},
+    add: {style: 'basefuncs btn--grey', label: '+'},
+    clear: {style: 'edit btn--orange', label: 'AC', help: 'Clear the display (keypress: ESC)'},
+    bs: {style: 'edit btn--orange', label: '\u232B', help: 'Delete a character (keypress: Backspace)'},
+    eq: {style: 'result', label: '='}
 };
 
 
-//------------------------------------------------------------------------------
-// These functions are all about creating the DOM
-//------------------------------------------------------------------------------
+App.SciCalView = Backbone.View.extend({
+    el: $('#sci-cal'),
 
-document.addEventListener("keypress", eventKeyPress, true);
-window.addEventListener("load", onLoad, true);
+    events: {
+        'click .btn': 'onButtonClicked',
+        'keypress': 'onKeyPressed'
+    },
 
-function onLoad() {
-    draw();
-}
+    initialize: function() {
+        this.$displayContent = this.$el.find(".display-content");
+        this.$displayMode = this.$el.find(".display-mode");
+        this.$displayError = this.$el.find(".display-error");
 
-function draw() {
-    createButtons();
-    document.getElementById("display-mode").innerHTML =
-        (['deg', 'rad', 'grad'])[JsCalc.drg];
-    doButton("clear");
-}
+        this.listenTo(this.model, 'change', this.renderDisplay);
+    },
 
-function createButtons() {
-    var btnSlots = document.querySelectorAll('.btn-slot');
-    for (var i = 0; i < btnSlots.length; i++) {
-        var slot = btnSlots[i];
-        var id = slot.dataset.id;
-        var props = calcButtons[id];
-        if (props) {
-            props.id = id;
-            slot.appendChild(createButton(props));
-        }
+    render: function() {
+        this.createButtons();
+        this.onButtonClicked("clear");
+        this.renderDisplay();
+        return this;
     }
-}
+});
 
-function createButton(props) {
-    var button = document.createElement('div');
-    button.className = 'btn ' + (props.style || '');
-    button.id = 'btn-' + props.id;
-    if (props.help) {
-        button.title = props.help;
-    }
+App.SciCalView.prototype.createButtons = function() {
+    var buttonTemplate = _.template($('#button-template').text());
 
-    var textWrapper = document.createElement('div');
-    textWrapper.className = 'btn-text-wrapper';
-    var text = document.createElement('div');
-    text.className = 'btn-text';
-    text.innerHTML = props.sym || props.id;
-    textWrapper.appendChild(text);
-    button.appendChild(textWrapper);
+    this.$el.find('.btn-slot').each(function() {
+        var id = $(this).data('id');
+        var props = App.calcButtons[id];
+        if (!props) return;
 
-    button.addEventListener('click', function (e) {
-        doButton(props.id);
-    }, true);
+        _.defaults(props, {
+            id: id,
+            help: '',
+            style: '',
+            label: id
+        });
 
-    var wrapper = document.createElement('div');
-    wrapper.className = 'btn-wrapper';
-    wrapper.appendChild(button);
-    return wrapper;
-}
+        $(this).append(buttonTemplate(props));
+    });
+};
+
+App.SciCalView.prototype.renderDisplay = function() {
+    var cursor = this.model.get('paneloffset');
+    var text = this.model.get('panelvalue') || '0';
+    //todo get rid of nbsp
+    text = "&nbsp;" + text.substring(0, text.length - cursor) +
+        '<span class="display-cursor">' +
+        (text[text.length - cursor] || '') +
+        '</span>' +
+        text.substring(text.length - cursor + 1);
+
+    this.$displayContent.html(text);
+
+    text = this.model.get('errorvalue');
+    this.$displayError.html(text);
+
+    text = (['deg', 'rad', 'grad'])[this.model.get('drg')];
+    this.$displayMode.html(text);
+};
 
 
-// Open a URL - how depends on whether we're a widget or not
-function openURL(url) {
-    if (window.widget) {
-        window.widget.openURL(url);
+App.SciCalView.prototype.onButtonClicked = function(button) {
+    // Highlight the button by setting it's class list to "on"
+    var $btn = $("#btn-"+button);
+    $btn.addClass('btn--down');
+    setTimeout(function() {
+        $btn.removeClass('btn--down');
+    }, 200);
+
+    if (button == 'info') {
+        // swapPanel("front", "back");
     } else {
-        location.href=url;
+        this.model.onButton(button);
     }
-}
+};
 
-function eventKeyPress(event) {
+App.SciCalView.prototype.onKeyPressed = function(event) {
     if (event.metaKey || event.ctrlKey) return;
     event.stopPropagation();
     event.preventDefault();
+
     var key = "";
     switch(event.keyCode) {
-      case 3:
-      case 13:
-      case 61:
+    case 3:
+    case 13:
+    case 61:
         key = "eq";
         break;
-      case 46:
+    case 46:
         key = "decimal";
         break;
-      case 63289:
-      case 27:
+    case 63289:
+    case 27:
         key = "clear";
         break;
-      case 8:
+    case 8:
         key = "bs";
         break;
-      case 63234:
-      case 37:
+    case 63234:
+    case 37:
         key = "left";
         break;
-      case 63235:
-      case 39:
+    case 63235:
+    case 39:
         key = "right";
         break;
-      default:
-       if (event.charCode < 0xF700) {
+    default:
+        if (event.charCode < 0xF700) {
             key = String.fromCharCode(event.charCode);
             if (key=='*') key="mul";            // So we can highlight the button
             else if (key=='/') key="div";
@@ -150,81 +164,56 @@ function eventKeyPress(event) {
             else if (key=='-') key="sub";
             else if (key=='=') key="eq";
             else if (key=='.') key="decimal";
-       }
+        }
     }
     if (key) {
-        doButton(key);
+        this.onButtonClicked(key);
     }
-}
-
-function eventCopy(event) {
-    event.clipboardData.setData('text/plain', JsCalc.getDisplayText());
-    event.preventDefault();
-    event.stopPropagation();
-}
-
-function eventCut(event) {              // Likely to be Safari only
-    event.clipboardData.setData('text/plain', JsCalc.getDisplayText());
-    event.preventDefault();
-    event.stopPropagation();
-    doButton("clear");
-}
-
-function eventPaste(event) {            // Likely to be Safari only
-    var text = event.clipboardData.getData('text/plain');
-    JsCalc.setDisplayText(text.replace(/,/g, ''));
-    event.preventDefault();
-    event.stopPropagation();
-    doButton("");
-}
-
-
-// Called whenever a button is pressed or clicked
-//
-function doButton(btn) {
-//    window.status=btn;
-    if (btn == 'info') {
-        swapPanel("front", "back");
-    } else {
-        JsCalc.onButton(btn);
-    }
-
-    // Highlight the button by setting it's class list to "on"
-    //
-    var key = document.getElementById("btn-"+btn);
-    if (key) {
-        key.setAttribute("class", key.getAttribute("class")+" btn--down");
-        setTimeout(function() { key.setAttribute("class", key.getAttribute("class").replace(/ btn--down$/,"")); }, 200);
-    }
-
-    // Update the panel
-    //
-    document.getElementById("display-error").innerHTML = JsCalc.getErrorText();
-    document.getElementById("display-content").innerHTML = displayformat(JsCalc.getDisplayText());
-}
+};
 
 
 
-// Format the panelvalue for display - we insert the cursor at the right place
-//
-function displayformat(val) {
-    val = val || "0";
-    // val = zero(val);
-    var cursor = JsCalc.getCursorOffset();
-    val = "&nbsp;" + val.substring(0, val.length - cursor) +
-        "<span class=\"display-cursor\">" +
-        (val[val.length - cursor] || "") +
-        "</span>" +
-        val.substring(val.length - cursor + 1);
-    return val;
-}
 
-function swapPanel(from, to) {
-    var panels = [ document.getElementById(from), document.getElementById(to) ];
-    if (window.widget) {
-        widget.prepareForTransition(to=="front" ? "ToFront" : "ToBack");
-    }
-    panels[0].style.visibility = 'hidden';
-    panels[1].style.visibility = 'visible';
-    if (window.widget) setTimeout("widget.performTransition();", 0);
-}
+// todo some legacy stuff dealing with osx widget functionality, make sure it
+// doesn't break anything
+
+// // Open a URL - how depends on whether we're a widget or not
+// function openURL(url) {
+//     if (window.widget) {
+//         window.widget.openURL(url);
+//     } else {
+//         location.href=url;
+//     }
+// }
+
+// function eventCopy(event) {
+//     event.clipboardData.setData('text/plain', JsCalc.getDisplayText());
+//     event.preventDefault();
+//     event.stopPropagation();
+// }
+
+// function eventCut(event) {              // Likely to be Safari only
+//     event.clipboardData.setData('text/plain', JsCalc.getDisplayText());
+//     event.preventDefault();
+//     event.stopPropagation();
+//     doButton("clear");
+// }
+
+// function eventPaste(event) {            // Likely to be Safari only
+//     var text = event.clipboardData.getData('text/plain');
+//     JsCalc.setDisplayText(text.replace(/,/g, ''));
+//     event.preventDefault();
+//     event.stopPropagation();
+//     doButton("");
+// }
+
+
+// function swapPanel(from, to) {
+//     var panels = [ document.getElementById(from), document.getElementById(to) ];
+//     if (window.widget) {
+//         widget.prepareForTransition(to=="front" ? "ToFront" : "ToBack");
+//     }
+//     panels[0].style.visibility = 'hidden';
+//     panels[1].style.visibility = 'visible';
+//     if (window.widget) setTimeout("widget.performTransition();", 0);
+// }
