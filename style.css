@@ -12,7 +12,7 @@ body {
 
 /* div { position: absolute; z-index: 0 } */
 
-#calculator {
+#sci-cal {
     position: relative;
     max-width: 400px;
     border: 1px solid black;
@@ -51,7 +51,7 @@ body {
  * styles for front panel
  ************************************/
 
-#display {
+.display {
     position: relative;
     height: 40px;
     margin: 8px;
@@ -64,7 +64,7 @@ body {
     box-shadow:         inset 1px 1px 1px 0px rgba(80, 80, 80, 0.4);
 }
 
-#display-content {
+.display-content {
     position: absolute;
     left: 7px;
     right: 7px;
@@ -79,7 +79,7 @@ body {
     overflow: hidden;
 }
 
-#display-mode {
+.display-mode {
     position: absolute;
     top: 5px;
     left: 5px;
@@ -87,7 +87,7 @@ body {
     color: gray;
 }
 
-#display-error {
+.display-error {
     position: absolute;
     bottom: 5px;
     left: 5px;
@@ -100,7 +100,7 @@ body {
     background-color: black;
 }
 
-#buttons {
+.buttons {
     position: relative;
     margin: 7px;
 }
@@ -191,7 +191,7 @@ sub {
     box-shadow: none;
 }
 
-.btn#btn-eq {
+.btn[data-id="eq"] {
     position: absolute;
     top: 0;
     width: -webkit-calc(200% + 6px);
