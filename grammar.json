@@ -1,0 +1,50 @@
+{
+    "lex": {"rules": [
+        ["\\s+",                    "/* skip whitespace */"],
+        ["[0-9]+(?:\\.[0-9]+)?\\b", "return 'NUMBER';"],
+        ["[a-zA-Z]\\w*\\b",         "return 'IDENTIFIER'"],
+        ["\\*",                     "return '*';"],
+        ["\\/",                     "return '/';"],
+        ["-",                       "return '-';"],
+        ["\\+",                     "return '+';"],
+        ["\\^",                     "return '^';"],
+        ["\\(",                     "return '(';"],
+        ["\\)",                     "return ')';"],
+        ["$",                       "return 'EOF';"]
+    ]},
+
+    "operators": [
+        ["left", "+", "-"],
+        ["left", "*", "/"],
+        ["left", "^"],
+        ["left", "UMINUS"]
+    ],
+
+    "bnf": {
+        "equation": [["e EOF",   "return $1;"]],
+
+        "e": [
+            "fun",
+            "var",
+            "literal",
+            "sum",
+            "diff",
+            "mul",
+            "div",
+            "pow",
+            "neg",
+            "braced"
+        ],
+
+        "fun": [["IDENTIFIER ( e )", "{$$ = {fn: $1, args: [$3]};}"]],
+        "var": [["IDENTIFIER", "$$ = {fn: 'var', args: [$1]};"]],
+        "literal": [["NUMBER",  "$$ = Number(yytext);"]],
+        "sum": [["e + e", "$$ = {fn: 'sum', args: [$1, $3]};"]],
+        "diff": [["e - e", "$$ = {fn: 'diff', args: [$1, $3]};" ]],
+        "mul": [["e * e",  "$$ = {fn: 'mul', args: [$1, $3]};"]],
+        "div": [["e / e",  "$$ = {fn: 'div', args: [$1, $3]};"]],
+        "pow": [["e ^ e",  "$$ = {fn: 'pow', args: [$1, $3]};"]],
+        "neg": [["- e",  "$$ = {fn: 'neg', args: [$2]};", {"precedence": "UMINUS"}]],
+        "braced": [["( e )",  "$$ = {fn: 'braced', args: [$2]};"]]
+    }
+}
