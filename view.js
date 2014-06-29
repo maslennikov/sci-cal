@@ -94,7 +94,7 @@ App.SciCalView.prototype.createButtons = function() {
 
 App.SciCalView.prototype.renderDisplay = function() {
     var cursor = this.model.get('paneloffset');
-    var text = this.model.get('panelvalue') || '0';
+    var text = (this.model.get('panelvalue') || 0) + '';
     //todo get rid of nbsp
     text = "&nbsp;" + text.substring(0, text.length - cursor) +
         '<span class="display-cursor">' +

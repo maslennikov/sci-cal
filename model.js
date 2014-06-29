@@ -8,139 +8,26 @@ App.SciCal = Backbone.Model.extend({
         errorvalue: '',       // Value displayed in the error panel
         paneloffset: 0,       // How far in from the right we've cursored in
         drg: 0                // 0 - degrees, 1 - radians, 2 - gradians
+    },
+
+    initialize: function() {
+        var self = this;
+        this._engine = new App.SciCalEngine();
+        this.on('change:drg', function() {
+            self._engine.drg = self.get('drg');
+        });
     }
 });
 
-App.SciCal.prototype.PI = function() {
-    return Math.PI;
-};
-
-App.SciCal.prototype.E = function() {
-    return Math.E;
-};
-
-App.SciCal.prototype.pow = function(val, base) {
-    return Math.pow(val,base);
-};
-
-App.SciCal.prototype.utf8 = function(val) {
-    return "\""+String.fromCharCode(val)+"\"";
-};
-
-App.SciCal.prototype.log = function(val) {
-    return Math.log(val);
-};
-
-App.SciCal.prototype.abs = function(val) {
-    return Math.abs(val);
-};
-
-App.SciCal.prototype.sin = function(val) {
-    return Math.sin(this.trig(val));
-};
-
-App.SciCal.prototype.cos = function(val) {
-    return Math.cos(this.trig(val));
-};
-
-App.SciCal.prototype.tan = function(val) {
-    return Math.tan(this.trig(val));
-};
-
-App.SciCal.prototype.asin = function(val) {
-    return this.atrig(Math.asin(val));
-};
-
-App.SciCal.prototype.acos = function(val) {
-    return this.atrig(Math.acos(val));
-};
-
-App.SciCal.prototype.atan = function(val) {
-    return this.atrig(Math.atan(val));
-};
-
-App.SciCal.prototype.sqrt = function(val) {
-    return Math.sqrt(val);
-};
-
-App.SciCal.prototype.cbrt = function(val) {
-    return Math.sqrt(Math.sqrt(val));
-};
-
-App.SciCal.prototype.hex = function(val) {
-    return this.base(val, 16);
-};
-
-App.SciCal.prototype.oct = function(val) {
-    return this.base(val, 8);
-};
-
-App.SciCal.prototype.bin = function(val) {
-    return this.base(val, 2);
-};
-
-App.SciCal.prototype.base = function(val, base) {
-    var num = parseFloat(val);
-    if (num != Math.floor(num)) throw "Not an Integer";
-    var prefix = num < 0 ? "-" : "";
-    prefix += base == 16 ? "0x"
-        : base == 8 ? "0"
-        : base == 2 ? "%"
-        : base == 10 ? ""
-        : "?";
-    return prefix + Math.abs(num).toString(base);
-};
-
-/**
- * Convert value from current mode to radians
- */
-App.SciCal.prototype.trig = function(val, fromDrg) {
-    if (fromDrg == undefined) {
-        fromDrg = this.drg;
-    }
-
-    switch (fromDrg) {
-    case 0:
-        return (val % 360) * Math.PI / 180;
-    case 1:
-        return val % (Math.PI * 2);
-    case 2:
-        return (val % 400) / 200 * Math.PI;
-    default:
-        throw "Unknown base \"" + fromDrg + "\"";
-    }
-};
-
-/**
- * Convert value from radians to current mode
- */
-App.SciCal.prototype.atrig = function(val, toDrg) {
-    if (toDrg == undefined) {
-        toDrg = this.drg;
-    }
-
-    switch (toDrg) {
-    case 0:
-        return val * 180 / Math.PI;
-    case 1:
-        return val;
-    case 2:
-        return val * 200 / Math.PI;
-    default:
-        throw "Unknown base \"" + toDrg + "\"";
-    }
-};
-
-App.SciCal.prototype.fix = function(val) {
-    if (isNaN(val)) throw "Not A Number";
-    return val;
-};
 
 App.SciCal.prototype.onButton = function(btn) {
     try {
         this._onButton(btn);
     } catch (err) {
-        this.set({panelvalue: 'E', errorvalue: err, paneloffset: 0});
+        this.set({
+            panelvalue: 'E',
+            errorvalue: err.html || err.message || err,
+            paneloffset: 0});
     }
 };
 
@@ -149,7 +36,6 @@ App.SciCal.prototype.moveCursor = function(offset) {
     this.set('paneloffset', Math.min(text.length, Math.max(0, offset)));
 };
 
-//todo shit is broken, change fields through set() method
 App.SciCal.prototype._onButton = function(btn) {
     switch(btn) {
     case '':
@@ -170,10 +56,10 @@ App.SciCal.prototype._onButton = function(btn) {
         this.onPlusminus();
         break;
     case "pi":
-        this.append("PI()");
+        this.append("PI");
         break;
     case "magice":
-        this.append("E()");
+        this.append("E");
         break;
     case "sqrt":
     case "cbrt":
@@ -189,11 +75,10 @@ App.SciCal.prototype._onButton = function(btn) {
     case "oct":
     case "bin":
     case "utf8":
-        this.wrap(btn);
+        this.wrap(btn + '(', ')');
         break;
     case "pow":
-        this.set('panelvalue', 'pow(', zero(this.get('panelvalue')) + ',)');
-        this.set('paneloffset', 1);
+        this.wrap('(', ')^');
         break;
     case 'drg':
         this.onDrg();
@@ -223,17 +108,16 @@ App.SciCal.prototype._onButton = function(btn) {
 };
 
 App.SciCal.prototype.onDrg = function() {
-    var expr = this.get('panelvalue');
     var oldDrg = this.get('drg');
     var newDrg = (oldDrg + 1) % 3;
 
-    if (expr) {
-        var val = this.myeval(expr);
-        val = this.atrig(this.trig(val, oldDrg), newDrg);
-        expr = this.fix(val).toString();
+    var val = this.myeval(this.get('panelvalue'));
+
+    if (typeof val == 'number') {
+        val = this._engine.radToDrg(this._engine.drgToRad(val, oldDrg), newDrg);
     }
 
-    this.set({drg: newDrg, panelvalue: expr, errorvalue: ''});
+    this.set({drg: newDrg, panelvalue: val + '', errorvalue: ''});
 };
 
 App.SciCal.prototype.onEq = function() {
@@ -266,17 +150,14 @@ App.SciCal.prototype.append = function(val) {
     this.set('panelvalue', text);
 };
 
-App.SciCal.prototype.wrap = function(funcname) {
-    this.set('panelvalue', funcname + '(' + zero(this.get('panelvalue')) + ')');
+App.SciCal.prototype.wrap = function(prefix, postfix) {
+    this.set('panelvalue', prefix + (this.get('panelvalue') || '0') + postfix);
 };
 
 App.SciCal.prototype.clear = function() {
     this.set({panelvalue: '', errorvalue: '', paneloffset: 0});
 };
 
-function zero(val) {
-   return val=="" ? "0" : val;
-}
 
 
 /**
@@ -285,17 +166,45 @@ function zero(val) {
 App.SciCal.prototype.myeval = function(val) {
     var self = this;
 
-    if (val=="") return 0;
-    if (val=="E") return "E";
+    if (val === '') return '';
+    if (val == 'E') return "E";
     val = val.toString();
-    val = val.replace(/<[/]?[A-Za-z]*>/g,"");
-    if (/%[01]*[23456789ABCDEF]/.test(val)) {
-        throw "Illegal Binary Digit";
-    }
-    val = val.replace(/%([01]+)/g, function(m,p1){return parseInt(p1,2)});
 
-    //quick and dirty: replace all function calls with method calls
-    val = val.replace(/([\w]+)\(/g, 'self.$1(');
-    val = eval(val);
-    return val;
+    return this._reduceExpressionTree(grammar.parse(val));
+};
+
+/**
+ * Reduce arithmetic expression tree down to the final value
+ */
+App.SciCal.prototype._reduceExpressionTree = function(node) {
+    var self = this;
+
+    if (typeof node != 'object') {
+        throw new Error('internal error: malformed expression node: ' + node);
+    }
+
+    if (node.type == 'literal') {
+        return node.value;
+    }
+
+    if (node.type == 'variable') {
+        return this._engine.constant(node.value);
+    }
+
+    if (node.type == 'subexpr') {
+        return this._reduceExpressionTree(node.value);
+    }
+
+    if (node.type == 'function') {
+        var fn = this._engine[node.value];
+        if (typeof fn != 'function') {
+            throw new Error('undefined function: ' + node.value);
+        }
+
+        return fn.apply(this._engine, (node.args || []).map(function(arg) {
+            return self._reduceExpressionTree(arg);
+        }));
+    }
+
+    throw new Error('internal error: unknown node type: ' + node.type);
 };

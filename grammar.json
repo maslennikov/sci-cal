@@ -1,7 +1,10 @@
 {
     "lex": {"rules": [
         ["\\s+",                    "/* skip whitespace */"],
-        ["[0-9]+(?:\\.[0-9]+)?\\b", "return 'NUMBER';"],
+        ["[0-9]+(?:\\.[0-9]+)?\\b", "return 'DEC_NUMBER';"],
+        ["0x[0-9a-fA-F]+\\b",       "return 'HEX_NUMBER';"],
+        ["0b[01]+\\b",              "return 'BIN_NUMBER';"],
+        ["\"(\\\\.|[^\"])\"",       "return 'STRING';"],
         ["[a-zA-Z]\\w*\\b",         "return 'IDENTIFIER'"],
         ["\\*",                     "return '*';"],
         ["\\/",                     "return '/';"],
@@ -36,15 +39,20 @@
             "braced"
         ],
 
-        "fun": [["IDENTIFIER ( e )", "{$$ = {fn: $1, args: [$3]};}"]],
-        "var": [["IDENTIFIER", "$$ = {fn: 'var', args: [$1]};"]],
-        "literal": [["NUMBER",  "$$ = Number(yytext);"]],
-        "sum": [["e + e", "$$ = {fn: 'sum', args: [$1, $3]};"]],
-        "diff": [["e - e", "$$ = {fn: 'diff', args: [$1, $3]};" ]],
-        "mul": [["e * e",  "$$ = {fn: 'mul', args: [$1, $3]};"]],
-        "div": [["e / e",  "$$ = {fn: 'div', args: [$1, $3]};"]],
-        "pow": [["e ^ e",  "$$ = {fn: 'pow', args: [$1, $3]};"]],
-        "neg": [["- e",  "$$ = {fn: 'neg', args: [$2]};", {"precedence": "UMINUS"}]],
-        "braced": [["( e )",  "$$ = {fn: 'braced', args: [$2]};"]]
+        "fun": [["IDENTIFIER ( e )", "{$$ = {type: 'function', value: $1, args: [$3]};}"]],
+        "var": [["IDENTIFIER", "$$ = {type: 'variable', value: $1};"]],
+        "literal": [
+            ["DEC_NUMBER",  "$$ = {type: 'literal', value: parseFloat($1)};"],
+            ["HEX_NUMBER",  "$$ = {type: 'literal', value: parseInt($1, 16)};"],
+            ["BIN_NUMBER",  "$$ = {type: 'literal', value: parseInt($1.slice(2), 10)};"]
+        ],
+        "sum": [["e + e", "$$ = {type: 'function', value: 'sum', args: [$1, $3]};"]],
+        "diff": [["e - e", "$$ = {type: 'function', value: 'diff', args: [$1, $3]};" ]],
+        "mul": [["e * e",  "$$ = {type: 'function', value: 'mul', args: [$1, $3]};"]],
+        "div": [["e / e",  "$$ = {type: 'function', value: 'div', args: [$1, $3]};"]],
+        "pow": [["e ^ e",  "$$ = {type: 'function', value: 'pow', args: [$1, $3]};"]],
+        "neg": [["- e",  "$$ = {type: 'function', value: 'neg', args: [$2]};",
+                 {"precedence": "UMINUS"}]],
+        "braced": [["( e )",  "$$ = {type: 'subexpr', value: $2};"]]
     }
 }
