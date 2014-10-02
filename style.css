@@ -24,6 +24,9 @@ body {
     box-shadow:         1px 1px 1px 0px rgba(80, 80, 80, 0.4);
 }
 
+.focuscapture:focus {
+    outline: none;
+}
 
 /*************************************
  * styles for info panel

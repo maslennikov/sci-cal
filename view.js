@@ -112,15 +112,13 @@ App.SciCalView.prototype.renderDisplay = function() {
 };
 
 App.SciCalView.prototype.onEnter = function() {
-    var $span = this.$el.find('span');
-    $span.attr('tabindex', '1').attr('contenteditable', 'true');
-    $span.focus();
+    var $focus = this.$el.find('.focuscapture');
+    $focus.focus();
 };
 
 App.SciCalView.prototype.onLeave = function() {
-    var $span = this.$el.find('span');
-    $span.removeAttr('contenteditable').removeAttr('tabindex');
-    $span.blur();
+    var $focus = this.$el.find('.focuscapture');
+    $focus.blur();
 };
 
 App.SciCalView.prototype.onButtonClicked = function(event) {
@@ -137,11 +135,9 @@ App.SciCalView.prototype.onButtonClicked = function(event) {
 
 App.SciCalView.prototype.onKeyPressed = function(event) {
     if (event.metaKey || event.ctrlKey) return;
-    event.stopPropagation();
-    event.preventDefault();
 
     var key = "";
-    switch(event.keyCode) {
+    switch (event.keyCode) {
     case 3:
     case 13:
     case 61:
@@ -166,16 +162,24 @@ App.SciCalView.prototype.onKeyPressed = function(event) {
         key = "right";
         break;
     default:
-        if (event.charCode < 0xF700) {
-            key = String.fromCharCode(event.charCode);
-            if (key=='*') key="mul";            // So we can highlight the button
-            else if (key=='/') key="div";
-            else if (key=='+') key="add";
-            else if (key=='-') key="sub";
-            else if (key=='=') key="eq";
-            else if (key=='.') key="decimal";
+        key = String.fromCharCode(event.charCode);
+        switch (key) {
+        case '*': key = 'mul'; break;
+        case '/': key = 'div'; break;
+        case '+': key = 'add'; break;
+        case '-': key = 'sub'; break;
+        case '=': key = 'eq'; break;
+        case '.': key = 'decimal'; break;
+        default:
+            key = /[\ 0-9a-zA_Z()]/.test(key) && key;
         }
     }
+
+    if (key || event.charCode) {
+        event.stopPropagation();
+        event.preventDefault();
+    }
+
     if (key) {
         this.onInput(key);
     }
