@@ -17,7 +17,8 @@ $(function() {
             e.html = 'Error in expression: <i>' +
                 grammar.lexer.upcomingInput() + '</i>';
         } else {
-            e.html = 'Unexpected input: <i>' + params.text + '</i>';
+            e.html = 'Unexpected input: <i>' +
+                (params.text || grammar.lexer.pastInput()) + '</i>';
         }
 
         console.log('Grammar error: %s', msg);
